@@ -1,0 +1,50 @@
+﻿<Controls:MetroWindow x:Class="DirectorsCutterWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DirectorsCutterWPF"
+        mc:Ignorable="d"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        Title="Director's Cutter" Height="700" Width="1000" WindowStartupLocation="CenterScreen" Icon="Resources/1445076069_Sclssors.ico">
+    <Grid>
+       
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TabControl x:Name="tabControl"  Grid.Column="0" >
+            <TabItem Header="Video File 1">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <MediaElement Grid.Row="0" Name="mePlayer" LoadedBehavior="Manual"/>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="20"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <ToolBarPanel Grid.Row="0">
+                            
+                        </ToolBarPanel>
+                        <TextBlock Name="tbTimeRange" Grid.Row="1" >From:0 to 100</TextBlock>
+                        <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="90" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" ></Controls:RangeSlider>
+                        
+                    </Grid>
+
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+        <GroupBox Grid.Column="2" Header="Scenes" >
+            <ScrollViewer  />
+        </GroupBox>
+
+    </Grid>
+</Controls:MetroWindow>
