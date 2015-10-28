@@ -19,19 +19,22 @@
             <TabItem Header="Video File 1">
                 <Grid Background="#FFE5E5E5">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition Height=".3*"></RowDefinition>
+                        <RowDefinition Height="4*"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <MediaElement Grid.Row="0" Name="mePlayer" LoadedBehavior="Manual"/>
-                    <Grid Grid.Row="1">
+                    <MediaElement Grid.Row="1" Name="mePlayer" LoadedBehavior="Pause"/>
+                    <Grid Grid.Row="2">
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
                             <RowDefinition Height="20"></RowDefinition>
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
-                        <ToolBarPanel Grid.Row="0">
-                            
-                        </ToolBarPanel>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <Button Name="openVid" Click="openVid_Click">
+                                <Image Source="Resources/opened_folder.png"/>
+                            </Button>
+                        </StackPanel>
                         <TextBlock Name="tbTimeRange" Grid.Row="1" >From:0 to 100</TextBlock>
                         <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="90" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" ></Controls:RangeSlider>
                         
