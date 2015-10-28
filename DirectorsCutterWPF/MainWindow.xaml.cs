@@ -75,6 +75,7 @@ namespace DirectorsCutterWPF
         private void cutRange_LowerThumbDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             tbTimeRange.Text = "From: "+cutRange.LowerValue.ToString()+" To: "+cutRange.UpperValue.ToString();
+            //mePlayer.Position=
         }
 
         private void cutRange_UpperThumbDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -101,7 +102,17 @@ namespace DirectorsCutterWPF
             if (openFileDialog1.ShowDialog() == WF.DialogResult.OK)
             {
                 mePlayer.Source = new Uri(openFileDialog1.FileName);
+                tbVidPath.Text = openFileDialog1.FileName;
             }
+        }
+
+        private void mePlayer_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            cutRange.Minimum = 0;
+            cutRange.Maximum = mePlayer.NaturalDuration.TimeSpan.TotalSeconds;
+            cutRange.LowerValue = cutRange.Minimum;
+            cutRange.UpperValue = cutRange.Maximum;
+            tbTimeRange.Text = "From: " + cutRange.LowerValue.ToString() + " To: " + cutRange.UpperValue.ToString();
         }
     }
 }
