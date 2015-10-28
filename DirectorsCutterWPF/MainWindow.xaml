@@ -23,7 +23,8 @@
                         <RowDefinition Height="4*"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <MediaElement Grid.Row="1" Name="mePlayer" LoadedBehavior="Pause"/>
+                    <TextBlock Grid.Row="0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Name="tbVidPath"/>
+                    <MediaElement Grid.Row="1" Name="mePlayer" LoadedBehavior="Pause" MediaOpened="mePlayer_MediaOpened"/>
                     <Grid Grid.Row="2">
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
@@ -39,6 +40,7 @@
                         <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="90" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" ></Controls:RangeSlider>
                         
                     </Grid>
+                    
 
                 </Grid>
             </TabItem>
