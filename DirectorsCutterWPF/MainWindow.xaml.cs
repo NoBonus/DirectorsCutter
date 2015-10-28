@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WF = System.Windows.Forms;
 
 namespace DirectorsCutterWPF
 {
@@ -84,6 +85,23 @@ namespace DirectorsCutterWPF
         private void cutRange_UpperThumbDragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
 
+        }
+
+        private void openVid_Click(object sender, RoutedEventArgs e)
+        {
+            WF.OpenFileDialog openFileDialog1 = new WF.OpenFileDialog();
+            string formats = "All Videos Files |*.dat; *.wmv; *.3g2; *.3gp; *.3gp2; *.3gpp; *.amv; *.asf;  *.avi; *.bin; *.cue; *.divx; *.dv; *.flv; *.gxf; *.iso; *.m1v; *.m2v; *.m2t; *.m2ts; *.m4v; " +
+                  " *.mkv; *.mov; *.mp2; *.mp2v; *.mp4; *.mp4v; *.mpa; *.mpe; *.mpeg; *.mpeg1; *.mpeg2; *.mpeg4; *.mpg; *.mpv2; *.mts; *.nsv; *.nuv; *.ogg; *.ogm; *.ogv; *.ogx; *.ps; *.rec; *.rm; *.rmvb; *.tod; *.ts; *.tts; *.vob; *.vro; *.webm";
+
+            //openFileDialog1.InitialDirectory = "c:\\";
+            openFileDialog1.Filter = formats;
+
+            openFileDialog1.RestoreDirectory = true;
+
+            if (openFileDialog1.ShowDialog() == WF.DialogResult.OK)
+            {
+                mePlayer.Source = new Uri(openFileDialog1.FileName);
+            }
         }
     }
 }
