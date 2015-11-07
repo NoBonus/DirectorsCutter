@@ -126,6 +126,17 @@
   <ItemGroup>
     <Resource Include="Resources\opened_folder.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Play-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Stop-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Pause-32.png" />
+    <Resource Include="Resources\Volume Down-32.png" />
+    <Resource Include="Resources\Volume Up-32.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
