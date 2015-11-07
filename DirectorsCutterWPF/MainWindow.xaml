@@ -24,7 +24,7 @@
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Name="tbVidPath"/>
-                    <MediaElement Grid.Row="1" Name="mePlayer" LoadedBehavior="Pause" MediaOpened="mePlayer_MediaOpened"/>
+                    <MediaElement Grid.Row="1" Name="mePlayer" LoadedBehavior="Manual" MediaOpened="mePlayer_MediaOpened" BufferingStarted="mePlayer_BufferingStarted" ScrubbingEnabled="True"/>
                     <Grid Grid.Row="2">
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
@@ -35,9 +35,16 @@
                             <Button Name="openVid" Click="openVid_Click">
                                 <Image Source="Resources/opened_folder.png"/>
                             </Button>
+                            <Button Name="playVid" Command="MediaCommands.Play">
+                                <Image Source="Resources/Play-32.png"/>
+                            </Button>
+                            <Button Name="pauseVid" Command="MediaCommands.Pause">
+                                <Image Source="Resources/Pause-32.png"/>
+                            </Button>
+                            <Slider Orientation="Horizontal" Name="sliVolume" Value="{Binding ElementName=mePlayer, Path=Volume}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150"/>
                         </StackPanel>
                         <TextBlock Name="tbTimeRange" Grid.Row="1" >From:0 to 100</TextBlock>
-                        <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="90" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" ></Controls:RangeSlider>
+                        <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="90" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" LowerThumbDragDelta="cutRange_LowerThumbDragDelta" UpperThumbDragDelta="cutRange_UpperThumbDragDelta" ></Controls:RangeSlider>
                         
                     </Grid>
                     

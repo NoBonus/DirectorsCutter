@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using WF = System.Windows.Forms;
 
 namespace DirectorsCutterWPF
@@ -22,6 +23,8 @@ namespace DirectorsCutterWPF
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        private bool mediaPlayerIsPlaying=false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,6 +33,17 @@ namespace DirectorsCutterWPF
             CommandBindings.Add(new CommandBinding(MediaCommands.Pause, MediaElement_Pause, MediaElement_IfPlaying));
             CommandBindings.Add(new CommandBinding(MediaCommands.FastForward, MediaElement_FastForward, MediaElement_IfPlaying));
             CommandBindings.Add(new CommandBinding(MediaCommands.Rewind, MediaElement_Rewind, MediaElement_IfPlaying));
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
+            timer.Start();
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            if (!mediaPlayerIsPlaying) return;
+            if(mePlayer.Position.TotalSeconds>= cutRange.UpperValue)mePlayer.Pause();
+            
         }
 
         private void MediaElement_Rewind(object sender, ExecutedRoutedEventArgs e)
@@ -44,27 +58,30 @@ namespace DirectorsCutterWPF
 
         private void MediaElement_Pause(object sender, ExecutedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            mePlayer.Pause();
         }
 
         private void MediaElement_IfPlaying(object sender, CanExecuteRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            e.CanExecute = mediaPlayerIsPlaying;
         }
 
         private void MediaElement_Stop(object sender, ExecutedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            mePlayer.Stop();
+            mediaPlayerIsPlaying = false;
         }
 
         private void MediaElement_CanPlay(object sender, CanExecuteRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            e.CanExecute = (mePlayer != null) && (mePlayer.Source != null);
         }
 
         private void MediaElement_Play(object sender, ExecutedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            mePlayer.Position = TimeSpan.FromSeconds(cutRange.LowerValue);
+            mePlayer.Play();
+            mediaPlayerIsPlaying = true;
         }
 
         private void cutRange_LowerThumbDragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -74,13 +91,14 @@ namespace DirectorsCutterWPF
 
         private void cutRange_LowerThumbDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            tbTimeRange.Text = "From: "+cutRange.LowerValue.ToString()+" To: "+cutRange.UpperValue.ToString();
+            tbTimeRange.Text = "From: "+cutRange.LowerValue.ToString()+" To: "+ TimeSpan.FromSeconds(cutRange.UpperValue).ToString();
             //mePlayer.Position=
+
         }
 
         private void cutRange_UpperThumbDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            tbTimeRange.Text = "From: " + cutRange.LowerValue.ToString() + " To: " + cutRange.UpperValue.ToString();
+            tbTimeRange.Text = "From: " + cutRange.LowerValue.ToString() + " To: " + TimeSpan.FromSeconds(cutRange.UpperValue).ToString();
         }
 
         private void cutRange_UpperThumbDragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -112,7 +130,28 @@ namespace DirectorsCutterWPF
             cutRange.Maximum = mePlayer.NaturalDuration.TimeSpan.TotalSeconds;
             cutRange.LowerValue = cutRange.Minimum;
             cutRange.UpperValue = cutRange.Maximum;
-            tbTimeRange.Text = "From: " + cutRange.LowerValue.ToString() + " To: " + cutRange.UpperValue.ToString();
+            tbTimeRange.Text = "From: " + cutRange.LowerValue.ToString() + " To: " + TimeSpan.FromSeconds(cutRange.UpperValue).ToString();
+            mePlayer.Play();
+        }
+
+        private void cutRange_LowerThumbDragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            Console.WriteLine("cutRange.LowerValue:{0}", cutRange.LowerValue);
+            mePlayer.Position = TimeSpan.FromSeconds(cutRange.LowerValue);
+        }
+
+        private void cutRange_UpperThumbDragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            Console.WriteLine("cutRange.UpperValue:{0}", cutRange.UpperValue);
+            mePlayer.Pause();
+            mePlayer.Position = TimeSpan.FromSeconds(cutRange.UpperValue);
+            mePlayer.Play();
+            mePlayer.Pause();
+        }
+
+        private void mePlayer_BufferingStarted(object sender, RoutedEventArgs e)
+        {
+            if(!mediaPlayerIsPlaying) mePlayer.Play();
         }
     }
 }
