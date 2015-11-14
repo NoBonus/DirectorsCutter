@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:DirectorsCutterWPF"
         mc:Ignorable="d"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Director's Cutter" Height="700" Width="1000" WindowStartupLocation="CenterScreen" Icon="Resources/1445076069_Sclssors.ico">
     <Grid>
        
@@ -16,7 +17,8 @@
         </Grid.ColumnDefinitions>
 
         <TabControl x:Name="tabControl"  Grid.Column="0" >
-            <TabItem Header="Video File 1">
+            <TabItem Header="Video 1" TextOptions.TextHintingMode="Fixed">
+                
                 <Grid Background="#FFE5E5E5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height=".3*"></RowDefinition>
@@ -41,10 +43,20 @@
                             <Button Name="pauseVid" Command="MediaCommands.Pause">
                                 <Image Source="Resources/Pause-32.png"/>
                             </Button>
+                            <Button Name="volumeVidDn" Command="MediaCommands.DecreaseVolume">
+                                <Image Source="Resources/Volume Down-32.png"/>
+                            </Button>
+                           
                             <Slider Orientation="Horizontal" Name="sliVolume" Value="{Binding ElementName=mePlayer, Path=Volume}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150"/>
+                            <Button Name="volumeVidUp" Command="MediaCommands.IncreaseVolume">
+                                <Image Source="Resources/Volume Up-32.png"/>
+                            </Button>
+                            <Button Name="btnAddCut" Command="local:Command.AddCutCommand">
+                                <Image Source="Resources/1445076069_Sclssors.ico"/>
+                            </Button>
                         </StackPanel>
-                        <TextBlock Name="tbTimeRange" Grid.Row="1" >From:0 to 100</TextBlock>
-                        <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="90" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" LowerThumbDragDelta="cutRange_LowerThumbDragDelta" UpperThumbDragDelta="cutRange_UpperThumbDragDelta" ></Controls:RangeSlider>
+                        <TextBlock Name="tbTimeRange" Grid.Row="1" >From:0 to 0</TextBlock>
+                        <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="0" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" LowerThumbDragDelta="cutRange_LowerThumbDragDelta" UpperThumbDragDelta="cutRange_UpperThumbDragDelta" ></Controls:RangeSlider>
                         
                     </Grid>
                     
@@ -55,7 +67,9 @@
         </TabControl>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <GroupBox Grid.Column="2" Header="Scenes" >
-            <ScrollViewer  />
+            <ScrollViewer  >
+                <ListView ItemsSource="{Binding lstCuts}" Name="lvCuts" />
+            </ScrollViewer>
         </GroupBox>
 
     </Grid>

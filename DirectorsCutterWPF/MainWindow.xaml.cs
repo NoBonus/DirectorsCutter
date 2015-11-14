@@ -1,6 +1,12 @@
 ﻿using MahApps.Metro.Controls;
+using MediaToolkit;
+using MediaToolkit.Model;
+using MediaToolkit.Options;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,13 +24,19 @@ using WF = System.Windows.Forms;
 
 namespace DirectorsCutterWPF
 {
+    public static class Command
+    {
+
+        public static readonly RoutedUICommand AddCutCommand = new RoutedUICommand("Add Cut", "AddCut", typeof(MainWindow));
+      
+    }
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
         private bool mediaPlayerIsPlaying=false;
-
+        public ObservableCollection<VideoCut> lstCuts;
         public MainWindow()
         {
             InitializeComponent();
@@ -33,10 +45,26 @@ namespace DirectorsCutterWPF
             CommandBindings.Add(new CommandBinding(MediaCommands.Pause, MediaElement_Pause, MediaElement_IfPlaying));
             CommandBindings.Add(new CommandBinding(MediaCommands.FastForward, MediaElement_FastForward, MediaElement_IfPlaying));
             CommandBindings.Add(new CommandBinding(MediaCommands.Rewind, MediaElement_Rewind, MediaElement_IfPlaying));
+            CommandBindings.Add(new CommandBinding(Command.AddCutCommand, AddCut, MediaElement_CanPlay));
+
+            lstCuts = new ObservableCollection<VideoCut>();
+
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
+        }
+
+        private void AddCut(object sender, ExecutedRoutedEventArgs e)
+        {
+            VideoCut vc = new VideoCut();
+            vc.cutName = "Cut_" + lstCuts.Count.ToString();
+            vc.index = lstCuts.Count;
+            vc.sourcePath = tbVidPath.Text;
+            vc.startTime = TimeSpan.FromSeconds(cutRange.LowerValue);
+            vc.endTime = TimeSpan.FromSeconds(cutRange.UpperValue);
+            vc.genThumb();
+            lstCuts.Add(vc);
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -154,4 +182,32 @@ namespace DirectorsCutterWPF
             if(!mediaPlayerIsPlaying) mePlayer.Play();
         }
     }
+    public class VideoCut
+    {
+        public int index { get; set; }
+        public string cutName { get; set; }
+        public TimeSpan startTime { get; set; }
+        public TimeSpan endTime { get; set; }
+        public string sourcePath { get; set; }
+        public string thumbPath { get; set; }
+        public byte[] imgThumb { get; set; }
+        public void genThumb()
+        {
+            thumbPath = System.IO.Path.Combine( System.IO.Path.GetTempPath(), cutName+index.ToString()+".jpg");
+            var inputFile = new MediaFile { Filename = sourcePath };
+            var outputFile = new MediaFile { Filename = thumbPath };
+            using (var engine = new Engine())
+            {
+                engine.GetMetadata(inputFile);
+                var options = new ConversionOptions { Seek = startTime };
+                engine.GetThumbnail(inputFile, outputFile, options);
+            }
+            var img = System.Drawing.Image.FromFile(thumbPath);
+            MemoryStream ms = new MemoryStream();
+            img.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            imgThumb = ms.ToArray();
+        }
+    }
+
+   
 }
