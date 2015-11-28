@@ -4,67 +4,107 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DirectorsCutterWPF"
+                   
         mc:Ignorable="d"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="Director's Cutter" Height="700" Width="1000" WindowStartupLocation="CenterScreen" Icon="Resources/1445076069_Sclssors.ico">
+        Title="Director's Cutter" Height="700" Width="1000" WindowStartupLocation="CenterScreen" Icon="Resources/1445076069_Sclssors.ico" Loaded="MetroWindow_Loaded" Margin="0" Padding="10">
     <Grid>
-       
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TabControl x:Name="tabControl"  Grid.Column="0" >
-            <TabItem Header="Video 1" TextOptions.TextHintingMode="Fixed">
-                
-                <Grid Background="#FFE5E5E5">
+
+        <DockPanel Grid.Column="0">
+            <Grid Background="#FFE5E5E5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height=".3*"></RowDefinition>
+                    <RowDefinition Height="4*"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Name="tbVidPath"/>
+                <MediaElement Grid.Row="1" Name="mePlayer" LoadedBehavior="Manual" MediaOpened="mePlayer_MediaOpened" BufferingStarted="mePlayer_BufferingStarted" ScrubbingEnabled="True"/>
+                <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height=".3*"></RowDefinition>
-                        <RowDefinition Height="4*"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Name="tbVidPath"/>
-                    <MediaElement Grid.Row="1" Name="mePlayer" LoadedBehavior="Manual" MediaOpened="mePlayer_MediaOpened" BufferingStarted="mePlayer_BufferingStarted" ScrubbingEnabled="True"/>
-                    <Grid Grid.Row="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition Height="20"></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Height="32">
-                            <Button Name="openVid" Click="openVid_Click" >
-                                <Image Source="Resources/opened_folder.png"/>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Height="42">
+                        <Button Name="openVid" Click="openVid_Click" Height="32" Padding="0">
+                            <Image Source="Resources/opened_folder.png" Height="32"/>
+                        </Button>
+                        <Button Name="playVid" Command="MediaCommands.Play" Height="32" Padding="0">
+                            <Image Source="Resources/Play-32.png" Height="32"/>
+                        </Button>
+                        <Button Name="pauseVid" Command="MediaCommands.Pause" Height="32" Padding="0">
+                            <Image Source="Resources/Pause-32.png" Height="32"/>
+                        </Button>
+                        <Button Name="volumeVidDn" Command="MediaCommands.DecreaseVolume" Height="32" Padding="0">
+                            <Image Source="Resources/Volume Down-32.png" Height="32"/>
+                        </Button>
+
+                        <Slider Orientation="Horizontal" Name="sliVolume" Value="{Binding ElementName=mePlayer, Path=Volume}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150"/>
+                        <Button Name="volumeVidUp" Command="MediaCommands.IncreaseVolume" Height="32" Padding="0">
+                            <Image Source="Resources/Volume Up-32.png" Height="32"/>
+                        </Button>
+                        <GroupBox Header="Start" FontSize="8" Controls:ControlsHelper.HeaderFontSize="7" Margin="5,0" Padding="0" Height="42">
+                            <StackPanel Orientation="Horizontal" >
+                                <Button Name="btnStartStepForward" Command="local:Command.StepForwardCommand" Height="32" Padding="0">
+                                    <Image Source="Resources/Next-32.png" Height="32"/>
+                                </Button>
+                                <Button Name="btnStartStepBackward" Command="local:Command.StepBackwardCommand" Height="32" Padding="0">
+                                    <Image Source="Resources/Previous-32.png" Height="32"/>
+                                </Button>
+                            </StackPanel>
+
+                        </GroupBox>
+                        <GroupBox Header="End" FontSize="8" Controls:ControlsHelper.HeaderFontSize="7" Margin="5,0" Padding="0" Height="42">
+                            <StackPanel Orientation="Horizontal" >
+                                <Button Name="btnEndStepForward" Command="local:Command.StepForwardCommand" Height="32" Padding="0">
+                                    <Image Source="Resources/Next-32.png" Height="32"/>
+                                </Button>
+                                <Button Name="btnEndStepBackward" Command="local:Command.StepBackwardCommand" Height="32" Padding="0">
+                                    <Image Source="Resources/Previous-32.png" Height="32"/>
+                                </Button>
+                            </StackPanel>
+
+                        </GroupBox>
+
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition  />
+                                <RowDefinition  />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="13" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Name="txtStepVal" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="0,2,2,2" Padding="2" AllowDrop="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Text="{Binding ElementName=cutRange, Path=SmallChange}" HorizontalAlignment="Right" Width="32" PreviewTextInput="txtStepVal_PreviewTextInput" >
+
+                            </TextBox>
+                            <Button Grid.Row="0" Grid.Column="1" Padding="1" FontSize="12" MinHeight="0" Name="btnStepValUp" Click="btnStepValUp_Click" >
+                                +
                             </Button>
-                            <Button Name="playVid" Command="MediaCommands.Play">
-                                <Image Source="Resources/Play-32.png"/>
-                            </Button>
-                            <Button Name="pauseVid" Command="MediaCommands.Pause">
-                                <Image Source="Resources/Pause-32.png"/>
-                            </Button>
-                            <Button Name="volumeVidDn" Command="MediaCommands.DecreaseVolume">
-                                <Image Source="Resources/Volume Down-32.png"/>
-                            </Button>
-                           
-                            <Slider Orientation="Horizontal" Name="sliVolume" Value="{Binding ElementName=mePlayer, Path=Volume}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150"/>
-                            <Button Name="volumeVidUp" Command="MediaCommands.IncreaseVolume">
-                                <Image Source="Resources/Volume Up-32.png"/>
-                            </Button>
-                            <Button Name="btnAddCut" Command="local:Command.AddCutCommand">
-                                <Image Source="Resources/1445076069_Sclssors.ico"/>
-                            </Button>
-                        </StackPanel>
-                        <TextBlock Name="tbTimeRange" Grid.Row="1" >From:0 to 0</TextBlock>
-                        <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="0" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" LowerThumbDragDelta="cutRange_LowerThumbDragDelta" UpperThumbDragDelta="cutRange_UpperThumbDragDelta" CentralThumbDragCompleted="cutRange_CentralThumbDragCompleted" CentralThumbDragDelta="cutRange_CentralThumbDragDelta"  ></Controls:RangeSlider>
-                        
-                    </Grid>
-                    
+                            <Button Grid.Row="1" Grid.Column="1" Padding="1" FontSize="12" MinHeight="0" Name="btnStepValDown" Click="btnStepValDown_Click">-</Button>
+                        </Grid>
+
+                        <Button Name="btnAddCut" Command="local:Command.AddCutCommand" Height="32" Padding="0">
+                            <Image Source="Resources/1445076069_Sclssors.ico" Height="32"/>
+                        </Button>
+                    </StackPanel>
+                    <TextBlock Name="tbTimeRange" Grid.Row="1" >From:0 to 0</TextBlock>
+                    <Controls:RangeSlider Grid.Row="2" IsSnapToTickEnabled="True" Name="cutRange" LowerThumbDragStarted="cutRange_LowerThumbDragStarted" LowerThumbDragCompleted="cutRange_LowerThumbDragCompleted" MinRangeWidth="1" TickPlacement="TopLeft" UpperValue="0" UpperThumbDragCompleted="cutRange_UpperThumbDragCompleted" UpperThumbDragStarted="cutRange_UpperThumbDragStarted" LowerThumbDragDelta="cutRange_LowerThumbDragDelta" UpperThumbDragDelta="cutRange_UpperThumbDragDelta" CentralThumbDragCompleted="cutRange_CentralThumbDragCompleted" CentralThumbDragDelta="cutRange_CentralThumbDragDelta"  ></Controls:RangeSlider>
 
                 </Grid>
-            </TabItem>
 
-        </TabControl>
+
+            </Grid>
+
+        </DockPanel>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <GroupBox Grid.Column="2" Header="Scenes" >
             <Grid>
@@ -74,15 +114,20 @@
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" >
                     <ListView ItemsSource="{Binding lstCuts}" Name="lvCuts" AllowDrop="True"  >
+                        <ListView.Resources>
+                            <Style TargetType="GridViewColumnHeader">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </ListView.Resources>
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="VerticalContentAlignment" Value="Top"/>
                             </Style>
                         </ListView.ItemContainerStyle>
                         <ListView.View>
-                            <GridView AllowsColumnReorder="False" >
+                            <GridView >
 
-                                <GridViewColumn >
+                                <GridViewColumn Width="100">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -91,11 +136,12 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn >
+                                <GridViewColumn Width="Auto">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid VerticalAlignment="Stretch">
                                                 <Grid.RowDefinitions>
+                                                    <RowDefinition/>
                                                     <RowDefinition/>
                                                     <RowDefinition/>
                                                     <RowDefinition/>
@@ -106,14 +152,17 @@
                                                     <ColumnDefinition/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Grid.Row="0">Title:</TextBlock>
-                                                <TextBox  Grid.Column="1" Grid.Row="0" Text="{Binding cutName}"></TextBox>
-                                                <TextBlock Grid.Column="0"  Grid.Row="1">From:</TextBlock>
-                                                <TextBlock Grid.Column="1"  Grid.Row="1" Text="{Binding startTime}"></TextBlock>
-                                                <TextBlock Grid.Column="0"  Grid.Row="2">To:</TextBlock>
-                                                <TextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding endTime}"></TextBlock>
-                                                <TextBlock Grid.Column="0"  Grid.Row="3">Duration:</TextBlock>
-                                                <TextBlock Grid.Column="1"  Grid.Row="3" Text="{Binding duration}"></TextBlock>
+                                                <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Width="20" Height="20">
+                                                    <Image Source="Resources/del_1.png" HorizontalAlignment="Right"></Image>
+                                                </Button>
+                                                <TextBlock Grid.Column="0" Grid.Row="1">Cut Name:</TextBlock>
+                                                <TextBox  Grid.Column="1" Grid.Row="1" Text="{Binding cutName}"></TextBox>
+                                                <TextBlock Grid.Column="0"  Grid.Row="2">From:</TextBlock>
+                                                <TextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding startTime}"></TextBlock>
+                                                <TextBlock Grid.Column="0"  Grid.Row="3">To:</TextBlock>
+                                                <TextBlock Grid.Column="1"  Grid.Row="3" Text="{Binding endTime}"></TextBlock>
+                                                <TextBlock Grid.Column="0"  Grid.Row="4">Duration:</TextBlock>
+                                                <TextBlock Grid.Column="1"  Grid.Row="4" Text="{Binding duration}"></TextBlock>
 
                                             </Grid>
 
@@ -131,7 +180,7 @@
                     </ListView>
                 </ScrollViewer>
                 <StackPanel Grid.Row="1">
-                    
+
                 </StackPanel>
             </Grid>
         </GroupBox>

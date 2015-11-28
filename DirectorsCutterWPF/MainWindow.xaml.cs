@@ -21,6 +21,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using WF = System.Windows.Forms;
+using WPF.JoshSmith.ServiceProviders.UI;
+using System.Text.RegularExpressions;
 
 namespace DirectorsCutterWPF
 {
@@ -28,7 +30,8 @@ namespace DirectorsCutterWPF
     {
 
         public static readonly RoutedUICommand AddCutCommand = new RoutedUICommand("Add Cut", "AddCut", typeof(MainWindow));
-      
+        public static readonly RoutedUICommand StepForwardCommand = new RoutedUICommand("Step Forward", "StepForward", typeof(MainWindow));
+        public static readonly RoutedUICommand StepBackwardCommand = new RoutedUICommand("Step Backward", "StepBackward", typeof(MainWindow));
     }
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
@@ -36,7 +39,9 @@ namespace DirectorsCutterWPF
     public partial class MainWindow : MetroWindow
     {
         private bool mediaPlayerIsPlaying=false;
-        public List<VideoCut> lstCuts;
+        public ObservableCollection<VideoCut> lstCuts;
+        ListViewDragDropManager<VideoCut> dragMgr;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -46,8 +51,10 @@ namespace DirectorsCutterWPF
             CommandBindings.Add(new CommandBinding(MediaCommands.FastForward, MediaElement_FastForward, MediaElement_IfPlaying));
             CommandBindings.Add(new CommandBinding(MediaCommands.Rewind, MediaElement_Rewind, MediaElement_IfPlaying));
             CommandBindings.Add(new CommandBinding(Command.AddCutCommand, AddCut, MediaElement_CanPlay));
+            CommandBindings.Add(new CommandBinding(Command.StepForwardCommand, StepForward, MediaElement_CanPlay));
+            CommandBindings.Add(new CommandBinding(Command.StepBackwardCommand, StepBackward, MediaElement_CanPlay));
 
-            lstCuts = new List<VideoCut>();
+            lstCuts = new ObservableCollection<VideoCut>();
             lvCuts.ItemsSource = lstCuts;
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -55,6 +62,61 @@ namespace DirectorsCutterWPF
             timer.Start();
         }
 
+       
+
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            dragMgr = new ListViewDragDropManager<VideoCut>(lvCuts);
+            lvCuts.DragEnter += OnlvCutsDragEnter;
+            lvCuts.Drop += OnlvCutsDrop;
+
+        }
+        private void StepForward(object sender, ExecutedRoutedEventArgs e)
+        {
+            mePlayer.Pause();
+            var btn =(Button) e.Source;
+            if (btn.Name == "btnStartStepForward")
+            {
+                cutRange.LowerValue += cutRange.SmallChange;
+                mePlayer.Position = TimeSpan.FromSeconds(cutRange.LowerValue);
+            }
+            else
+            {
+                cutRange.UpperValue += cutRange.SmallChange;
+                mePlayer.Position = TimeSpan.FromSeconds(cutRange.UpperValue);
+            }
+            setRangeLabel();
+        }
+        private void StepBackward(object sender, ExecutedRoutedEventArgs e)
+        {
+            mePlayer.Pause();
+            var btn = (Button)e.Source;
+            if (btn.Name == "btnStartStepBackward")
+            {
+                cutRange.LowerValue -= cutRange.SmallChange;
+                mePlayer.Position = TimeSpan.FromSeconds(cutRange.LowerValue);
+            }
+            else
+            {
+                cutRange.UpperValue -= cutRange.SmallChange;
+                mePlayer.Position = TimeSpan.FromSeconds(cutRange.UpperValue);
+            }
+            setRangeLabel();
+        }
+
+
+        private void OnlvCutsDrop(object sender, DragEventArgs e)
+        {
+            if (e.Effects == DragDropEffects.None)
+                return;
+
+        }
+
+        private void OnlvCutsDragEnter(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Move;
+
+        }
         private void AddCut(object sender, ExecutedRoutedEventArgs e)
         {
             VideoCut vc = new VideoCut();
@@ -120,21 +182,24 @@ namespace DirectorsCutterWPF
 
         private void cutRange_LowerThumbDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            tbTimeRange.Text = "From: "+ TimeSpan.FromSeconds(cutRange.LowerValue).ToString()+" To: "+ TimeSpan.FromSeconds(cutRange.UpperValue).ToString();
+            setRangeLabel();
             //mePlayer.Position=
 
         }
 
         private void cutRange_UpperThumbDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            tbTimeRange.Text = "From: " + TimeSpan.FromSeconds(cutRange.LowerValue).ToString() + " To: " + TimeSpan.FromSeconds(cutRange.UpperValue).ToString();
+            setRangeLabel();
         }
 
         private void cutRange_UpperThumbDragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
 
         }
-
+        private void setRangeLabel()
+        {
+            tbTimeRange.Text = "From: " + TimeSpan.FromSeconds(cutRange.LowerValue).ToString() + " To: " + TimeSpan.FromSeconds(cutRange.UpperValue).ToString() + " , duration: " + TimeSpan.FromSeconds(cutRange.UpperValue - cutRange.LowerValue).ToString();
+        }
         private void openVid_Click(object sender, RoutedEventArgs e)
         {
             WF.OpenFileDialog openFileDialog1 = new WF.OpenFileDialog();
@@ -160,9 +225,9 @@ namespace DirectorsCutterWPF
             cutRange.Maximum = mePlayer.NaturalDuration.TimeSpan.TotalSeconds;
             cutRange.LowerValue = cutRange.Minimum;
             cutRange.UpperValue = cutRange.Maximum;
-            tbTimeRange.Text = "From: " + TimeSpan.FromSeconds(cutRange.LowerValue).ToString() + " To: " + TimeSpan.FromSeconds(cutRange.UpperValue).ToString();
-            
-            
+            //tbTimeRange.Text = "From: " + TimeSpan.FromSeconds(cutRange.LowerValue).ToString() + " To: " + TimeSpan.FromSeconds(cutRange.UpperValue).ToString();
+            setRangeLabel();
+
         }
 
         private void cutRange_LowerThumbDragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
@@ -187,7 +252,7 @@ namespace DirectorsCutterWPF
 
         private void cutRange_CentralThumbDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            tbTimeRange.Text = "From: " + TimeSpan.FromSeconds(cutRange.LowerValue).ToString() + " To: " + TimeSpan.FromSeconds(cutRange.UpperValue).ToString();
+            setRangeLabel();
         }
 
         private void cutRange_CentralThumbDragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
@@ -197,6 +262,31 @@ namespace DirectorsCutterWPF
             mePlayer.Position = TimeSpan.FromSeconds(cutRange.UpperValue);
             mePlayer.Play();
             mePlayer.Pause();
+        }
+
+        private void txtStepVal_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        private bool IsTextAllowed(string text)
+        {
+            Regex regex = new Regex("[^0-9.-]+"); //regex that matches disallowed text
+            return !regex.IsMatch(text);
+        }
+
+        private void btnStepValUp_Click(object sender, RoutedEventArgs e)
+        {
+            float val = float.Parse(txtStepVal.Text);
+            val += 0.1f;
+            cutRange.SmallChange = val;
+        }
+
+        private void btnStepValDown_Click(object sender, RoutedEventArgs e)
+        {
+            float val = float.Parse(txtStepVal.Text);
+            val -= 0.1f;
+            cutRange.SmallChange = val;
         }
     }
     public class VideoCut
