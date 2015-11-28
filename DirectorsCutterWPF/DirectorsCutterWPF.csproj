@@ -77,6 +77,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DragAdorner.cs" />
+    <Compile Include="ListViewDragDropManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -87,6 +89,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MouseUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -137,6 +140,15 @@
     <Resource Include="Resources\Pause-32.png" />
     <Resource Include="Resources\Volume Down-32.png" />
     <Resource Include="Resources\Volume Up-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\del_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Previous-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Next-32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
