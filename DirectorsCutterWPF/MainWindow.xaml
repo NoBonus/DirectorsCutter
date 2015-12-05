@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DirectorsCutterWPF"
-                   
+           xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -18,7 +18,7 @@
         </Grid.ColumnDefinitions>
 
 
-        <DockPanel Grid.Column="0">
+        <DockPanel Grid.Column="0" Margin="10,5,0,0">
             <Grid Background="#FFE5E5E5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height=".3*"></RowDefinition>
@@ -106,14 +106,14 @@
 
         </DockPanel>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-        <GroupBox Grid.Column="2" Header="Scenes" >
+        <GroupBox Grid.Column="2" Header="Cuts" >
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="421*"/>
+                    <RowDefinition Height="199*"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" >
-                    <ListView ItemsSource="{Binding lstCuts}" Name="lvCuts" AllowDrop="True"  >
+                    <ListView ItemsSource="{Binding lstCuts}" Name="lvCuts" AllowDrop="True" HorizontalAlignment="Stretch"  local:GridViewColumnResize.Enabled="True">
                         <ListView.Resources>
                             <Style TargetType="GridViewColumnHeader">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -136,10 +136,10 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Width="Auto">
+                                <GridViewColumn  local:GridViewColumnResize.Width="*">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Grid VerticalAlignment="Stretch">
+                                            <Grid VerticalAlignment="Stretch" Width="Auto" MinWidth="100" MinHeight="3">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition/>
                                                     <RowDefinition/>
@@ -149,14 +149,14 @@
                                                     <RowDefinition/>
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Width="20" Height="20">
+                                                <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Width="20" Height="20" Click="btnremoveCut_Click">
                                                     <Image Source="Resources/del_1.png" HorizontalAlignment="Right"></Image>
                                                 </Button>
                                                 <TextBlock Grid.Column="0" Grid.Row="1">Cut Name:</TextBlock>
-                                                <TextBox  Grid.Column="1" Grid.Row="1" Text="{Binding cutName}"></TextBox>
+                                                <TextBox  Grid.Column="1" Grid.Row="1" Text="{Binding cutName}" HorizontalAlignment="Stretch"></TextBox>
                                                 <TextBlock Grid.Column="0"  Grid.Row="2">From:</TextBlock>
                                                 <TextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding startTime}"></TextBlock>
                                                 <TextBlock Grid.Column="0"  Grid.Row="3">To:</TextBlock>
@@ -179,9 +179,36 @@
                         </ListView.View>
                     </ListView>
                 </ScrollViewer>
-                <StackPanel Grid.Row="1">
+                <GroupBox Grid.Row="1" Header="Process"  >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10">
+                            <RadioButton Name="radJoin" Content="Join Cuts" Grid.Row="0" Grid.Column="0" IsChecked="True"></RadioButton>
+                            <RadioButton Name="radSeparate" Content="Separate Cuts" Grid.Row="0" Grid.Column="1" ></RadioButton>
+                        </StackPanel>
 
-                </StackPanel>
+                        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Output Folder:</TextBlock>
+                        <TextBox Name="txtOutputPath"  Grid.Row="1" Grid.Column="1"></TextBox>
+                        <Button  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Name="btnOutputFolder" Click="btnOutputFolder_Click">
+                            <Image Source="Resources/opened_folder.png" Width="18" Height="18"/>
+                        </Button>
+                        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Output Filename:</TextBlock>
+                        <TextBox Name="txtjoinFileName" IsReadOnly="False" Grid.Row="2" Grid.Column="1" IsEnabled="{Binding ElementName=radJoin, Path=IsChecked}"></TextBox>
+
+                        <Button Name="btnProcess" Grid.Row="3" Grid.Column="1" Background="#CC119EDA" BorderBrush="#CC119EDA" FontFamily="Segoe UI" FontSize="12" FontWeight="Normal" Height="31" VerticalAlignment="Bottom" Margin="15" Click="btnProcess_Click">
+                            <TextBlock Foreground="White">Process</TextBlock>
+                        </Button>
+                    </Grid>
+                </GroupBox>
             </Grid>
         </GroupBox>
 

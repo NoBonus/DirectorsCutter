@@ -1,7 +1,4 @@
 ﻿using MahApps.Metro.Controls;
-using MediaToolkit;
-using MediaToolkit.Model;
-using MediaToolkit.Options;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -41,7 +38,7 @@ namespace DirectorsCutterWPF
         private bool mediaPlayerIsPlaying=false;
         public ObservableCollection<VideoCut> lstCuts;
         ListViewDragDropManager<VideoCut> dragMgr;
-
+        private CutProcess cprocess;
         public MainWindow()
         {
             InitializeComponent();
@@ -60,6 +57,7 @@ namespace DirectorsCutterWPF
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
+            cprocess = new CutProcess();
         }
 
        
@@ -288,45 +286,51 @@ namespace DirectorsCutterWPF
             val -= 0.1f;
             cutRange.SmallChange = val;
         }
-    }
-    public class VideoCut
-    {
-        public int index { get; set; }
-        public string cutName { get; set; }
-        public TimeSpan startTime { get; set; }
-        public TimeSpan endTime { get; set; }
-        public TimeSpan duration
+
+        private void btnremoveCut_Click(object sender, RoutedEventArgs e)
         {
-            get
-            {
-                return endTime- startTime;
-            }
+            Button btn = (Button)sender;
+            ListViewItem lvi = FindParent<ListViewItem>(btn);
+            VideoCut vc = (VideoCut)lvi.DataContext;
+            lstCuts.Remove(vc);
         }
-        public string sourcePath { get; set; }
-        public string thumbPath { get; set; }
-        public byte[] imgThumb { get; set; }
-        public VideoCut()
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
+            //get parent item
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+
+            //we've reached the end of the tree
+            if (parentObject == null) return null;
+
+            //check if the parent matches the type we're looking for
+            T parent = parentObject as T;
+            if (parent != null)
+                return parent;
+            else
+                return FindParent<T>(parentObject);
+        }
+
+        private void btnProcess_Click(object sender, RoutedEventArgs e)
+        {
+            btnProcess.IsEnabled = false;
+            lvCuts.IsEnabled = false;
+            cprocess.Process(lstCuts, false,"");
+            btnProcess.IsEnabled = true;
+            lvCuts.IsEnabled = true;
+        }
+
+        private void btnOutputFolder_Click(object sender, RoutedEventArgs e)
+        {
+            WF.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
+            fbd.ShowNewFolderButton = false;
+            var result = fbd.ShowDialog();
+            if (result == WF.DialogResult.OK)
+            {
+                txtOutputPath.Text = fbd.SelectedPath;
+            }
 
         }
-        
-        public void genThumb()
-        {
-            thumbPath = System.IO.Path.Combine( System.IO.Path.GetTempPath(), cutName+index.ToString()+".jpg");
-            var inputFile = new MediaFile { Filename = sourcePath };
-            var outputFile = new MediaFile { Filename = thumbPath };
-            using (var engine = new Engine())
-            {
-                engine.GetMetadata(inputFile);
-                var options = new ConversionOptions { Seek = startTime };
-                engine.GetThumbnail(inputFile, outputFile, options);
-            }
-            var img = System.Drawing.Image.FromFile(thumbPath);
-            MemoryStream ms = new MemoryStream();
-            img.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-            imgThumb = ms.ToArray();
-        }
     }
-
+    
    
 }
